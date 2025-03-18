@@ -2,12 +2,27 @@
 /*******************************************************************************
  * Device Driver Simulation
  * -----------------------
- * This class demonstrates core concepts of device drivers and I/O handling:
+ * This class demonstrates core OS I/O and synchronization concepts:
  * 
- * 1. Asynchronous I/O operations
- * 2. Request queuing
- * 3. Thread safety
- * 4. Device status management
+ * Producer-Consumer Pattern:
+ * - Producer (CLI) generates I/O requests
+ * - Consumer (device thread) processes requests
+ * - Bounded buffer (queue) manages synchronization
+ * 
+ * I/O Scheduling Concepts:
+ * - FIFO scheduling demonstrates basic I/O queuing
+ * - Request batching for efficiency
+ * - Priority handling could be added for real-time requirements
+ * 
+ * Device State Management:
+ * - State machine pattern mirrors real device behavior
+ * - Status tracking enables system monitoring
+ * - Error handling demonstrates fault tolerance
+ * 
+ * Thread Synchronization:
+ * - Mutex prevents race conditions
+ * - Condition variables manage thread signaling
+ * - Critical section protection in queue operations
  ******************************************************************************/
 
 #pragma once

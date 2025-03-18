@@ -28,13 +28,28 @@
 void run_test_sequence(CLI& cli) {
     // Define a sequence of commands that exercise different system features
     std::vector<std::string> test_commands = {
-        "allocate 1024",     // Test memory allocation with 1KB
-        "submit read 512",   // Test device I/O with a read operation
-        "stats",             // Verify system state through statistics
-        "allocate 2048",     // Test another memory allocation
-        "submit write 1024", // Test device I/O with a write operation
-        "stats",             // Final state verification
-        "exit"              // Clean shutdown
+        // Memory Management Scenarios
+        "allocate 1024",      // Base allocation
+        "allocate 512",       // Fragment creation
+        "allocate 256",       // Further fragmentation
+        "stats",              // View fragmentation pattern
+        
+        // Producer-Consumer Pattern Demo
+        "submit read 512",    // Queue population
+        "submit write 1024",  // Multiple requests
+        "submit read 256",    // Queue depth test
+        "stats",              // Queue state verification
+        
+        // Error Handling Scenarios
+        "allocate 1048576",   // Memory exhaustion test
+        "submit write 2048",  // Large I/O test
+        
+        // Performance Load Test
+        "submit read 128",    // Rapid request sequence
+        "submit write 128",
+        "submit read 128",
+        "stats",              // System under load stats
+        "exit"                // Clean shutdown
     };
 
     cli.run_test_sequence(test_commands);
