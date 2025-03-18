@@ -1,3 +1,15 @@
+
+/*******************************************************************************
+ * Command Line Interface
+ * ---------------------
+ * Demonstrates user interface concepts:
+ * 
+ * 1. Command parsing and dispatching
+ * 2. Interactive vs batch operation
+ * 3. System component integration
+ * 4. Error handling and user feedback
+ ******************************************************************************/
+
 #pragma once
 #include <string>
 #include <vector>
@@ -11,15 +23,27 @@
 
 class CLI {
 private:
-    MemoryPool& memory_pool;
-    DeviceDriver& device_driver;
-    Logger& logger;
-    bool running;
-    bool test_mode;
-    std::vector<std::string> test_outputs;
+    MemoryPool& memory_pool;              // Reference to memory system
+    DeviceDriver& device_driver;          // Reference to I/O system
+    Logger& logger;                       // Reference to logging system
+    bool running;                         // Main loop control
+    bool test_mode;                       // Operation mode flag
+    std::vector<std::string> test_outputs;// Test output collection
 
+    /**
+     * Command Registry
+     * ---------------
+     * Maps command names to:
+     * - Help string
+     * - Handler function
+     */
     std::map<std::string, std::pair<std::string, std::function<void(const std::vector<std::string>&)>>> commands;
 
+    /**
+     * Command Parsing
+     * --------------
+     * Splits command string into tokens
+     */
     std::vector<std::string> split_command(const std::string& input) {
         std::vector<std::string> tokens;
         std::stringstream ss(input);
@@ -33,10 +57,16 @@ private:
     }
 
 public:
+    /**
+     * Constructor: System Integration
+     * -----------------------------
+     * Initializes CLI and registers all available commands
+     */
     CLI(MemoryPool& mp, DeviceDriver& dd, bool is_test = false)
         : memory_pool(mp), device_driver(dd), 
           logger(Logger::get_instance()), running(true), test_mode(is_test) {
 
+        // Register available commands
         commands["help"] = {"Show available commands", 
             [this](const std::vector<std::string>&) { show_help(); }};
 
@@ -53,7 +83,11 @@ public:
             [this](const std::vector<std::string>&) { running = false; }};
     }
 
-    // New method to execute a command programmatically
+    /**
+     * Command Execution
+     * ----------------
+     * Processes a single command with error handling
+     */
     void execute_command(const std::string& input) {
         auto tokens = split_command(input);
         if (tokens.empty()) return;
@@ -73,6 +107,11 @@ public:
         }
     }
 
+    /**
+     * Main Operation Loop
+     * ------------------
+     * Handles both interactive and test modes
+     */
     void run() {
         logger.info("Starting CLI interface");
         show_help();
@@ -84,13 +123,16 @@ public:
                 std::getline(std::cin, input);
                 execute_command(input);
             } else {
-                // In test mode, we break immediately
-                break;
+                break;  // Exit immediately in test mode
             }
         }
     }
 
-    // Method to run test commands and capture output
+    /**
+     * Test Mode Operation
+     * ------------------
+     * Executes a sequence of commands for testing
+     */
     void run_test_sequence(const std::vector<std::string>& commands) {
         for (const auto& cmd : commands) {
             logger.info("Test executing: " + cmd);
@@ -99,6 +141,11 @@ public:
     }
 
 private:
+    /**
+     * Command Handlers
+     * ---------------
+     * Individual command implementations
+     */
     void show_help() {
         std::cout << "Available commands:\n";
         for (const auto& cmd : commands) {

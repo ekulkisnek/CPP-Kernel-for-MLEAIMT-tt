@@ -1,3 +1,16 @@
+
+/*******************************************************************************
+ * Memory Pool Implementation
+ * ------------------------
+ * This class demonstrates fundamental memory management concepts similar to
+ * how operating systems manage physical memory. It implements:
+ * 
+ * 1. Memory allocation and deallocation
+ * 2. Memory fragmentation handling
+ * 3. Block splitting and merging
+ * 4. Memory usage statistics
+ ******************************************************************************/
+
 #pragma once
 #include <vector>
 #include <cstddef>
@@ -8,39 +21,62 @@
 
 class MemoryPool {
 private:
+    /**
+     * Memory Block Structure
+     * --------------------
+     * Represents a contiguous region of memory with metadata
+     * Similar to how OS page tables track memory regions
+     */
     struct MemoryBlock {
-        size_t size;
-        bool is_allocated;
-        char* data;
+        size_t size;         // Size of the block in bytes
+        bool is_allocated;   // Whether block is in use
+        char* data;         // Pointer to actual memory
         
         MemoryBlock(size_t s, char* d) : size(s), is_allocated(false), data(d) {}
     };
 
-    std::vector<MemoryBlock> blocks;
-    char* pool;
-    size_t total_size;
-    size_t used_size;
+    std::vector<MemoryBlock> blocks;  // List of memory blocks (like page table)
+    char* pool;                       // The actual memory buffer
+    size_t total_size;                // Total pool size
+    size_t used_size;                 // Currently allocated size
 
 public:
+    /**
+     * Constructor: Initializes memory pool
+     * Similar to how OS initializes physical memory at boot
+     */
     MemoryPool(size_t size) : total_size(size), used_size(0) {
-        pool = new char[size];
-        blocks.push_back(MemoryBlock(size, pool));
+        pool = new char[size];  // Allocate the memory buffer
+        blocks.push_back(MemoryBlock(size, pool));  // Initial block spans all memory
     }
 
+    /**
+     * Destructor: Cleanup memory
+     * Similar to OS shutdown memory cleanup
+     */
     ~MemoryPool() {
         delete[] pool;
     }
 
+    /**
+     * Memory Allocation
+     * ----------------
+     * Demonstrates first-fit allocation algorithm:
+     * 1. Find first block large enough
+     * 2. Split if necessary (memory efficiency)
+     * 3. Mark as allocated
+     */
     void* allocate(size_t size) {
         if (size == 0) return nullptr;
 
-        // Find first fit block
+        // Search for first suitable block
         for (auto& block : blocks) {
             if (!block.is_allocated && block.size >= size) {
-                // Split block if it's significantly larger
+                // Optimize space by splitting oversized blocks
                 if (block.size > size + sizeof(MemoryBlock)) {
                     size_t remaining_size = block.size - size;
                     block.size = size;
+                    // Create new block from remaining space
                     blocks.push_back(MemoryBlock(remaining_size, block.data + size));
                 }
                 
@@ -50,12 +86,20 @@ public:
             }
         }
         
-        throw std::bad_alloc();
+        throw std::bad_alloc();  // No suitable block found
     }
 
+    /**
+     * Memory Deallocation
+     * ------------------
+     * Demonstrates memory block merging:
+     * 1. Mark block as free
+     * 2. Merge with adjacent free blocks
+     */
     void deallocate(void* ptr) {
         if (!ptr) return;
 
+        // Find the block containing this pointer
         auto it = std::find_if(blocks.begin(), blocks.end(),
             [ptr](const MemoryBlock& block) { return block.data == ptr; });
 
@@ -63,7 +107,7 @@ public:
             it->is_allocated = false;
             used_size -= it->size;
             
-            // Merge with next block if free
+            // Merge with next block if it's free (reduces fragmentation)
             auto next = std::next(it);
             if (next != blocks.end() && !next->is_allocated) {
                 it->size += next->size;
@@ -72,20 +116,35 @@ public:
         }
     }
 
+    /**
+     * Fragmentation Analysis
+     * ---------------------
+     * Calculates memory fragmentation ratio:
+     * 0.0 = No fragmentation
+     * 1.0 = Completely fragmented
+     */
     double fragmentation_ratio() const {
         size_t largest_free_block = 0;
         size_t total_free = total_size - used_size;
 
+        // Find largest free block
         for (const auto& block : blocks) {
             if (!block.is_allocated && block.size > largest_free_block) {
                 largest_free_block = block.size;
             }
         }
 
+        // Calculate fragmentation ratio
         return total_free > 0 ? 
             1.0 - (static_cast<double>(largest_free_block) / total_free) : 0.0;
     }
 
+    /**
+     * Memory Statistics
+     * ----------------
+     * Provides insight into memory usage and fragmentation
+     * Similar to OS memory monitoring tools
+     */
     void print_stats() const {
         std::cout << "Memory Pool Stats:\n"
                   << "Total Size: " << total_size << " bytes\n"
