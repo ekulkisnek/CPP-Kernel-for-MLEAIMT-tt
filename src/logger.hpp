@@ -1,4 +1,3 @@
-
 /*******************************************************************************
  * Logger Implementation
  * -------------------
@@ -60,28 +59,59 @@
 #include <sstream>
 #include <iostream>
 
+/**
+ * Logger Class
+ * ===========
+ * System-wide logging facility implementing hierarchical message classification
+ * and thread-safe logging operations.
+ * 
+ * Core Operating System Concepts:
+ * 1. System Event Management
+ *    - Event classification
+ *    - Timestamp precision
+ *    - Message prioritization
+ * 
+ * 2. Thread Safety
+ *    - Mutex protection
+ *    - Atomic operations
+ *    - Critical section management
+ * 
+ * 3. Resource Optimization
+ *    - Buffered output
+ *    - Level filtering
+ *    - Memory efficiency
+ * 
+ * Design Pattern Implementation:
+ * - Singleton pattern ensures single logging instance
+ * - RAII for resource management
+ * - Observer pattern for event monitoring
+ */
 class Logger {
 public:
     /**
-     * Log Levels
-     * ----------
-     * Hierarchical logging levels for message filtering:
-     * DEBUG   - Detailed information for debugging
-     * INFO    - General information about system operation
-     * WARNING - Potential issues that aren't errors
-     * ERROR   - Serious problems that need attention
+     * Log Level Enumeration
+     * --------------------
+     * Hierarchical classification of log messages:
+     * - DEBUG:   Detailed debugging information
+     * - INFO:    General operational messages
+     * - WARNING: Potential issues requiring attention
+     * - ERROR:   Critical problems needing immediate action
+     * 
+     * Message Filtering:
+     * Higher levels implicitly include lower levels
+     * ERROR → WARNING → INFO → DEBUG
      */
     enum class Level {
-        DEBUG,
-        INFO,
-        WARNING,
-        ERROR
+        DEBUG,    // Development-time detailed information
+        INFO,     // Runtime operational status
+        WARNING,  // Non-critical issues
+        ERROR     // Critical system problems
     };
 
 private:
     static Logger* instance;          // Singleton instance
     static std::mutex mutex;          // Thread synchronization
-    
+
     std::ostream& output;            // Output stream (console/file)
     Level min_level;                 // Minimum level to log
 

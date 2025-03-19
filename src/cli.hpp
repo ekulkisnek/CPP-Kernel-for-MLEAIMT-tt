@@ -1,4 +1,3 @@
-
 /*******************************************************************************
  * Command Line Interface
  * ---------------------
@@ -62,10 +61,45 @@
 #include "device_driver.hpp"
 #include "logger.hpp"
 
+/**
+ * Command Line Interface (CLI) Class
+ * ================================
+ * Implements an interactive shell for system control and monitoring,
+ * demonstrating command processing and system integration patterns.
+ * 
+ * Operating System Concepts Demonstrated:
+ * 1. Command Processing
+ *    - Token parsing
+ *    - Argument validation
+ *    - Command dispatch
+ * 
+ * 2. System Integration
+ *    - Component interaction
+ *    - Resource management
+ *    - Error propagation
+ * 
+ * 3. User Interface
+ *    - Interactive mode
+ *    - Batch processing
+ *    - Error reporting
+ * 
+ * Architecture Overview:
+ * [User Input] → [Parser] → [Command Registry] → [System Components]
+ *     ↑                                                  |
+ *     └──────────────── [Output/Feedback] ←─────────────┘
+ */
 class CLI {
 private:
-    MemoryPool& memory_pool;              // Reference to memory system
-    DeviceDriver& device_driver;          // Reference to I/O system
+    /**
+     * System Component References
+     * -------------------------
+     * Core system services integrated through dependency injection:
+     * - memory_pool:    Memory management operations
+     * - device_driver:  I/O request processing
+     * - logger:         System event recording
+     */
+    MemoryPool& memory_pool;      // Memory subsystem interface
+    DeviceDriver& device_driver;   // I/O subsystem interface
     Logger& logger;                       // Reference to logging system
     bool running;                         // Main loop control
     bool test_mode;                       // Operation mode flag

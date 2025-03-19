@@ -1,4 +1,3 @@
-
 /*******************************************************************************
  * Device Driver Simulation
  * -----------------------
@@ -63,20 +62,50 @@
 #include <mutex>
 #include <condition_variable>
 
+/**
+ * DeviceDriver Class
+ * =================
+ * Simulates an operating system device driver with comprehensive I/O management.
+ * 
+ * Key OS Concepts Demonstrated:
+ * 1. Device State Management
+ *    - State transitions (READY → BUSY → ERROR)
+ *    - Interrupt handling simulation
+ *    - Device status monitoring
+ * 
+ * 2. I/O Request Processing
+ *    - Asynchronous operations
+ *    - Request queueing
+ *    - Completion handling
+ * 
+ * 3. Resource Management
+ *    - Queue depth control
+ *    - Thread lifecycle
+ *    - Error recovery
+ * 
+ * Implementation Details:
+ * ----------------------
+ * - Uses producer-consumer pattern
+ * - Thread-safe operations
+ * - FIFO scheduling
+ */
 class DeviceDriver {
 public:
     /**
      * Device Status Enumeration
      * ------------------------
-     * Represents possible device states:
-     * READY  - Available for new requests
-     * BUSY   - Currently processing a request
-     * ERROR  - Error condition detected
+     * Represents the operational states of the device:
+     * - READY:  Device is idle and can accept new requests
+     * - BUSY:   Device is processing a request
+     * - ERROR:  Device encountered an error condition
+     * 
+     * State Transitions:
+     * READY ←→ BUSY → ERROR → READY
      */
     enum class Status {
-        READY,
-        BUSY,
-        ERROR
+        READY,  // Device available for new requests
+        BUSY,   // Request being processed
+        ERROR   // Error condition detected
     };
 
     /**
@@ -88,10 +117,15 @@ public:
      * - Timestamp for request tracking
      */
     struct DeviceRequest {
-        std::string operation;
-        size_t data_size;
-        std::chrono::steady_clock::time_point timestamp;
+        std::string operation;  // Type of I/O operation (e.g., "read", "write")
+        size_t data_size;       // Amount of data to be read or written
+        std::chrono::steady_clock::time_point timestamp; // Timestamp of request submission
 
+        /**
+         * Constructor for DeviceRequest
+         * @param op The type of operation
+         * @param size The size of the data
+         */
         DeviceRequest(const std::string& op, size_t size)
             : operation(op), data_size(size),
               timestamp(std::chrono::steady_clock::now()) {}
@@ -99,42 +133,46 @@ public:
 
 private:
     Status status;                    // Current device status
-    std::queue<DeviceRequest> request_queue;  // Request queue
-    mutable std::mutex mutex;         // Thread synchronization
-    std::condition_variable cv;       // Thread notification
-    bool processing;                  // Processing control flag
-    
-    static constexpr size_t MAX_QUEUE_SIZE = 100;  // Maximum queued requests
+    std::queue<DeviceRequest> request_queue;  // Queue of pending I/O requests
+    mutable std::mutex mutex;         // Mutex for thread synchronization
+    std::condition_variable cv;       // Condition variable for thread signaling
+    bool processing;                  // Flag indicating whether the processing thread is active
+    static constexpr size_t MAX_QUEUE_SIZE = 100;  // Maximum number of requests allowed in the queue
 
 public:
     /**
-     * Constructor: Initialize device in READY state
+     * Constructor: Initializes the device driver in the READY state.
      */
     DeviceDriver() : status(Status::READY), processing(false) {}
 
     /**
      * Request Submission
      * -----------------
-     * Thread-safe method to queue new I/O requests
-     * Returns false if queue is full
+     * Submits a new I/O request to the device driver.
+     * @param operation The type of operation ("read" or "write")
+     * @param data_size The size of the data in bytes
+     * @return True if the request was successfully submitted, false if the queue is full.
      */
     bool submit_request(const std::string& operation, size_t data_size) {
-        std::lock_guard<std::mutex> lock(mutex);  // Thread safety
+        std::lock_guard<std::mutex> lock(mutex);  // Acquire lock for thread safety
 
+        // Check if the request queue is full
         if (request_queue.size() >= MAX_QUEUE_SIZE) {
-            return false;  // Queue full
+            return false;  // Queue is full, request rejected
         }
 
+        // Add the request to the queue
         request_queue.emplace(operation, data_size);
-        cv.notify_one();  // Wake up processing thread
+        // Signal the processing thread that a new request has arrived
+        cv.notify_one();
         return true;
     }
 
     /**
      * Start Request Processing
      * -----------------------
-     * Launches background thread for asynchronous request processing
-     * Simulates actual device I/O operations
+     * Starts a background thread to process I/O requests asynchronously.
+     * Simulates device I/O operations with simulated latency.
      */
     void start_processing() {
         processing = true;
@@ -142,18 +180,18 @@ public:
             while (processing) {
                 std::unique_lock<std::mutex> lock(mutex);
 
-                // Wait for requests if queue empty
+                // Wait for requests if the queue is empty
                 if (request_queue.empty()) {
                     status = Status::READY;
-                    cv.wait(lock);
+                    cv.wait(lock); // Wait for a request to be added to the queue
                     continue;
                 }
 
-                // Process next request
+                // Process the next request in the queue
                 status = Status::BUSY;
                 auto request = request_queue.front();
                 request_queue.pop();
-                lock.unlock();
+                lock.unlock(); // Release the lock before simulating I/O
 
                 // Simulate I/O time based on data size
                 std::this_thread::sleep_for(
@@ -166,22 +204,29 @@ public:
     /**
      * Stop Processing
      * --------------
-     * Graceful shutdown of request processing
+     * Gracefully stops the request processing thread.
      */
     void stop_processing() {
         processing = false;
-        cv.notify_all();  // Wake all waiting threads
+        cv.notify_all();  // Wake up any waiting threads
     }
 
     /**
      * Status Queries
      * -------------
-     * Thread-safe status information access
+     * Returns the current status of the device driver.
+     * @return The current device status (READY, BUSY, or ERROR).
      */
     Status get_status() const {
         return status;
     }
 
+    /**
+     * Queue Size
+     * ----------
+     * Returns the current number of requests in the queue.
+     * @return The number of requests in the queue.
+     */
     size_t queue_size() const {
         std::lock_guard<std::mutex> lock(mutex);
         return request_queue.size();
@@ -190,7 +235,7 @@ public:
     /**
      * Statistics Display
      * -----------------
-     * Shows current device state and queue status
+     * Prints the current device status and queue size to the console.
      */
     void print_stats() const {
         std::lock_guard<std::mutex> lock(mutex);

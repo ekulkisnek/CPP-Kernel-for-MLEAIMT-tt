@@ -64,6 +64,30 @@ void run_test_sequence(CLI& cli) {
  * 3. Operation (either test or interactive)
  * 4. Graceful shutdown
  */
+/**
+ * Kernel Simulation Entry Point
+ * ===========================
+ * Demonstrates a complete operating system kernel simulation focusing on:
+ * - Component initialization
+ * - System lifecycle management
+ * - Resource coordination
+ * - Error handling
+ * 
+ * System Architecture:
+ * [Memory Management] ← [Command Interface] → [Device Driver]
+ *         ↓                     ↓                   ↓
+ *         └──────→ [Logging System] ←──────────────┘
+ * 
+ * Initialization Sequence:
+ * 1. Memory pool creation
+ * 2. Device driver setup
+ * 3. Logger configuration
+ * 4. CLI initialization
+ * 
+ * Operating Modes:
+ * - Interactive: User command processing
+ * - Test: Automated test sequence execution
+ */
 int main(int argc, char* argv[]) {
     try {
         // System Initialization Phase
