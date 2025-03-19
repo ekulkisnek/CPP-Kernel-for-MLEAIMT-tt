@@ -2,12 +2,53 @@
 /*******************************************************************************
  * Command Line Interface
  * ---------------------
- * Demonstrates user interface concepts:
+ * Implements a shell-like interface for system interaction:
  * 
- * 1. Command parsing and dispatching
- * 2. Interactive vs batch operation
- * 3. System component integration
- * 4. Error handling and user feedback
+ * I. Command Processing Architecture:
+ * 1. Command Parser
+ *    - Token separation
+ *    - Argument validation
+ *    - Command recognition
+ * 
+ * 2. Dispatch System
+ *    - Command registration
+ *    - Handler mapping
+ *    - Error propagation
+ * 
+ * 3. Mode Support
+ *    - Interactive shell
+ *    - Batch processing
+ *    - Test sequence execution
+ * 
+ * II. System Integration:
+ * 1. Component Interaction
+ *    - Memory management
+ *    - Device operations
+ *    - Logging services
+ * 
+ * 2. Resource Management
+ *    - Command history
+ *    - Error recovery
+ *    - State persistence
+ * 
+ * III. User Interface Design:
+ * 1. Input Processing
+ *    - Command completion
+ *    - Error reporting
+ *    - Help system
+ * 
+ * 2. Output Formatting
+ *    - Status display
+ *    - Error messages
+ *    - Statistics reporting
+ * 
+ * Command Structure:
+ * command [arg1] [arg2] ... [argN]
+ * 
+ * Error Handling:
+ * - Invalid syntax: User feedback
+ * - System errors: Exception capture
+ * - Resource limits: Graceful degradation
  ******************************************************************************/
 
 #pragma once

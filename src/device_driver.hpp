@@ -2,27 +2,57 @@
 /*******************************************************************************
  * Device Driver Simulation
  * -----------------------
- * This class demonstrates core OS I/O and synchronization concepts:
+ * A comprehensive simulation of OS device driver architecture:
  * 
- * Producer-Consumer Pattern:
- * - Producer (CLI) generates I/O requests
- * - Consumer (device thread) processes requests
- * - Bounded buffer (queue) manages synchronization
+ * I. Core OS I/O Concepts Demonstrated:
+ * 1. Interrupt Handling Simulation
+ *    - Asynchronous request processing
+ *    - Event notification via condition variables
+ *    - Priority-based interrupt handling
  * 
- * I/O Scheduling Concepts:
- * - FIFO scheduling demonstrates basic I/O queuing
- * - Request batching for efficiency
- * - Priority handling could be added for real-time requirements
+ * 2. Device Management
+ *    - State machine implementation (READY/BUSY/ERROR)
+ *    - Device status monitoring
+ *    - Error recovery mechanisms
  * 
- * Device State Management:
- * - State machine pattern mirrors real device behavior
- * - Status tracking enables system monitoring
- * - Error handling demonstrates fault tolerance
+ * 3. I/O Scheduling
+ *    - FIFO queue implementation
+ *    - Request batching optimization
+ *    - Queue depth management
  * 
- * Thread Synchronization:
- * - Mutex prevents race conditions
- * - Condition variables manage thread signaling
- * - Critical section protection in queue operations
+ * II. Synchronization Patterns:
+ * 1. Producer-Consumer Implementation
+ *    - Thread-safe queue operations
+ *    - Blocking vs non-blocking I/O
+ *    - Buffer management
+ * 
+ * 2. Critical Section Protection
+ *    - Mutex-based synchronization
+ *    - Condition variable signaling
+ *    - Deadlock prevention
+ * 
+ * III. Performance Considerations:
+ * 1. Request Processing
+ *    - Batch processing for efficiency
+ *    - Simulated I/O latency
+ *    - Queue size optimization
+ * 
+ * 2. Resource Management
+ *    - Memory efficiency
+ *    - Thread lifecycle
+ *    - Error handling overhead
+ * 
+ * Implementation Architecture:
+ * [User Space]        [Kernel Space]        [Hardware]
+ * Request --> Queue --> Driver Thread --> Simulated Device
+ *   ^          |            |               |
+ *   |          v            v               v
+ * Response <- Status <-- Processing <-- I/O Complete
+ * 
+ * Error Handling:
+ * - Queue full: Request rejection
+ * - Device error: State transition
+ * - Thread failure: Graceful shutdown
  ******************************************************************************/
 
 #pragma once

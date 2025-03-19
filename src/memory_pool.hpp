@@ -2,13 +2,48 @@
 /*******************************************************************************
  * Memory Pool Implementation
  * ------------------------
- * This class demonstrates fundamental memory management concepts similar to
- * how operating systems manage physical memory. It implements:
+ * This class implements a memory management system that mirrors real OS concepts:
  * 
- * 1. Memory allocation and deallocation
- * 2. Memory fragmentation handling
- * 3. Block splitting and merging
- * 4. Memory usage statistics
+ * Key OS Memory Management Concepts Demonstrated:
+ * 1. Virtual Memory Simulation
+ *    - Block-based memory division (like pages)
+ *    - Memory protection through allocation flags
+ *    - Address space management via pointers
+ * 
+ * 2. Memory Allocation Strategies
+ *    - First-fit algorithm implementation
+ *    - Block splitting for efficiency (like buddy system)
+ *    - Coalescing to combat fragmentation
+ * 
+ * 3. Resource Management
+ *    - Dynamic block tracking (similar to page tables)
+ *    - Memory usage statistics (like vmstat)
+ *    - Error handling for allocation failures
+ * 
+ * 4. Memory Optimization Techniques
+ *    - Block merging (defragmentation)
+ *    - Split avoidance for small allocations
+ *    - Fragmentation monitoring
+ * 
+ * Implementation Notes:
+ * - Block Structure: Models OS page table entries
+ * - Allocation: O(n) search similar to linear page table scan
+ * - Deallocation: O(1) direct access like page frame freeing
+ * 
+ * Memory Layout:
+ * +----------------+
+ * | Memory Block   |
+ * |  +----------+ |
+ * |  | Metadata | |  <- Block tracking (size, status)
+ * |  +----------+ |
+ * |  | Data     | |  <- Actual memory space
+ * |  +----------+ |
+ * +----------------+
+ * 
+ * Error Handling:
+ * - Out of memory: std::bad_alloc
+ * - Invalid free: Silent return
+ * - Fragmentation: Monitored via ratio
  ******************************************************************************/
 
 #pragma once

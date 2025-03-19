@@ -2,12 +2,54 @@
 /*******************************************************************************
  * Logger Implementation
  * -------------------
- * Demonstrates key concepts in system logging and thread safety:
+ * A system-wide logging facility that mirrors OS logging systems:
  * 
- * 1. Singleton pattern for global access
- * 2. Thread-safe operations
- * 3. Log level filtering
- * 4. Timestamp-based logging
+ * I. System Logging Concepts:
+ * 1. Log Level Hierarchy
+ *    - DEBUG: Detailed debugging information
+ *    - INFO: General operational messages
+ *    - WARNING: Potential issues
+ *    - ERROR: Critical problems
+ * 
+ * 2. Thread Safety Implementation
+ *    - Mutex-protected logging
+ *    - Atomic operations
+ *    - Thread identification
+ * 
+ * 3. Performance Optimization
+ *    - Level-based filtering
+ *    - Buffered output
+ *    - Minimal critical sections
+ * 
+ * II. Design Patterns:
+ * 1. Singleton Pattern
+ *    - Global logger instance
+ *    - Lazy initialization
+ *    - Thread-safe construction
+ * 
+ * 2. RAII for Resource Management
+ *    - Mutex locking
+ *    - File handle management
+ *    - Exception safety
+ * 
+ * III. System Integration:
+ * 1. Component Integration
+ *    - Memory pool events
+ *    - Device driver status
+ *    - Command processing
+ * 
+ * 2. Diagnostic Support
+ *    - Timestamp precision
+ *    - Source identification
+ *    - Error correlation
+ * 
+ * Message Format:
+ * [Timestamp] [Level] [Thread ID] Message
+ * 
+ * Performance Characteristics:
+ * - Lock contention: Microsecond scale
+ * - Memory overhead: Constant per message
+ * - CPU impact: Minimal (async I/O)
  ******************************************************************************/
 
 #pragma once
