@@ -117,14 +117,7 @@ Run with `./main --test` to demonstrate:
 4. Extended command set
 5. Configuration file support
 
-## Contributing
-To contribute:
-1. Fork the repository
-2. Create a feature branch
-3. Submit a pull request
 
-## License
-This project is available under the MIT License.
 
 ## Advanced Operating System Concepts Demonstrated
 
